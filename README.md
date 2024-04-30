@@ -1,4 +1,6 @@
-# CSC Summer School in High-Performance Computing 2023
+# ESiWACE3 and WarmWorld Summer School 2024 in high performance computing (HPC) for climate and weather applications
+
+OLD TEXT below
 
 This is the material repository for the high-performance computing summer school by CSC - Finnish IT Center for Science.
 
