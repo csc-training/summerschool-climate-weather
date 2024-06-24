@@ -1,35 +1,129 @@
 ---
 title:  Visualization
+author: Florian Ziemen / DKRZ
 event:  ESiWACE3 and WarmWorld Summer School 2024
 lang:   en
 ---
 
 # Topics today
 
-# What is visualization
-# Importance of Visualizing Climate Model Output
-- Helps in understanding complex data
-- Communicates insights effectively
-- Aids in decision-making processes
-- **Examples of impactful climate visualizations**
+# What is visualization?
+```
+    4.779021e-07, 3.000158e-07, 3.943782e-07, 3.010814e-07, 1.824086e-07,
+    5.077264e-08, 5.310072e-08, 5.276124e-08, 5.363153e-08, 1.070061e-07,
+    6.913928e-08, 1.810711e-07, 9.877869e-08, 1.623726e-08, 4.198973e-08,
+    1.642887e-08, 3.282246e-08, 9.109718e-08, 8.140145e-08, 7.397978e-08,
+    8.817849e-08, 1.663861e-08, 2.876317e-08, 1.479019e-08, 9.942031e-09,
+    2.125612e-08, 1.641772e-08, 2.962805e-08, 2.954731e-08, 3.859089e-08,
+    4.320259e-08, 5.651723e-08, 2.374017e-08, 9.255361e-09, 8.066888e-09,
+    1.965597e-08, 1.462259e-08, 2.813349e-07, 3.110567e-07, 2.363449e-07,
+    2.999532e-07, 2.32825e-07, 2.798415e-07, 2.318629e-07, 2.352825e-07,
+    2.309811e-07, 2.338195e-07, 2.171457e-07, 2.598324e-07, 4.017004e-07,
+    3.878018e-07, 2.892292e-07, 3.617872e-07, 2.421747e-07, 1.556238e-07,
+```
 
-# Understanding Climate Model Outputs
-- Types of climate model outputs
-- Key variables and datasets (e.g., temperature, precipitation, sea level)
+# What is visualization?
 
-# Introduction to Python for Climate Data
-- Why use Python for data visualization?
+![](images/ngc3028_tas.png){width=90%} 
 
-# Jupyter notebooks and "plain" python scripts
-- Introduction to Jupyter Notebooks
+# What is visualization?
+![](images/visualization.png){width=100%}
+
+
+# What are we looking at
+
+* 3D, time varying atmosphere and ocean with many physical / biological properties
+* 2D Screen / paper
+
+# Challenges
+
+* Data reduction
+* Projection of the sphere onto a flat surface
+
+# Common types of climate visualizations
+
+* Maps
+* Sections
+* Line plots / scatter plots / ...
+
+# The problem of the peeled orange
+
+* There is no way to simply flatten out a sphere.
+* Any projection will distort something.
+
+# Common projections
+
+* Form groups and describe the following projections
+  * Plate Carree
+  * Mercator
+  * Mollweide
+  * Robinson
+  * Polar stereographic
+  
+* How are they constructed (if easy), what are they good at? What do they sacrifice?
+
+See [xkcd](https://xkcd.com/977/) for an overview of more projections.
+
+# The issue of too much data
+
+* About 100 variables in a model output dataset
+* A 2.5 km resolution simulation has about 320 Mio grid cells per layer.
+* Things evolve over time - how do you look at 100 years of simulation?
+
+# What are key variables you would look at? At what frequency / averaging?
 
 # Loading data with xarray and intake catalogs
 
+A minimal version of the global mean surface air temperature plot.
+
+```
+import intake
+cat = intake.open_catalog("https://data.nextgems-h2020.eu/online.yaml")
+cat.ICON.ngc3028.to_dask().tas.mean(dim="cell").plot()
+```
+
+![](images/tas_ngc3028_minimal.png){width=30%}
+
+
+# A minimal map plot
+
+```
+import intake
+import healpy as hp
+
+cat = intake.open_catalog("https://data.nextgems-h2020.eu/online.yaml")
+hp.mollview(cat.ICON.ngc3028.to_dask().tas.isel(time=0), flip='geo', nest=True)
+```
+
+![](images/healpix_l0.png){width=40%}
+
+This is a bit coarse. Let's go finer and switch the colormap
+
+# A nicer map plot
+
+```
+import intake
+import healpy as hp
+import matplotlib.pyplot as plt
+cat = intake.open_catalog("https://data.nextgems-h2020.eu/online.yaml")
+hp.mollview(cat.ICON.ngc3028(zoom=5).to_dask().tas.isel(time=0), flip='geo', nest=True, cmap='inferno')
+
+```
+
+![](images/healpix_l5.png){width=40%}
+
+Much better. :)
 
 # Essential Python Libraries for Data Visualization
-** Do I want to cover plotly?**
+
+* [intake](https://intake.readthedocs.io/en/latest/) and [xarray](https://docs.xarray.dev/en/stable/) - loading data
+* [numpy](https://numpy.org/doc/stable/) - efficient number crunching
+* [matplotlib](https://matplotlib.org/) & [cartopy](https://scitools.org.uk/cartopy/docs/latest/) - basic plots
+* [seaborn](https://seaborn.pydata.org/) - nicer visualizations
+
 
 # Line plots and friends
+
 * Matplotlib and Seaborn
 
 # Maps and Projections
@@ -90,11 +184,6 @@ lang:   en
 - Overview of Cartopy
 - Creating advanced geospatial plots
 - Customizing Cartopy maps
-
-# Heatmaps and Contour Plots for Climate Data
-- Creating heatmaps
-- Plotting contour lines
-- Customizing heatmaps and contour plots
 
 # Visualizing Climate Anomalies
 - What are climate anomalies?
@@ -180,3 +269,12 @@ lang:   en
 - Instructions for the exercise
 - Techniques for customization
 - Step-by-step guide
+
+# Jupyter notebooks and *plain* python scripts
+* Jupyter keeps the python running.
+  * Makes it easy to rapidly prototype.
+  * Typically one notebook per analysis.
+* Plain python is more helpful for building modular code.
+  * Tendency towards building libraries.
+  * Scripts that can more easily be used in batch mode.
+* [Papermill](https://github.com/nteract/papermill) allows to use notebooks as scripts.
