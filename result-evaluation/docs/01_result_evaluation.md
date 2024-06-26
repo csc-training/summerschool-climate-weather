@@ -37,14 +37,16 @@ What should we do?
   * Ocean energy balance
   * Regional budgets are possible but messy regarding advection.
   
-# Overview timeseries plots
+# Checking conservation in timeseries plots
 [nextgems prefinal ICON](https://swift.dkrz.de/v1/dkrz_b381d76e-63d7-4aeb-96f0-dfd91e102d40/nextgems_prefinal/ngc4008/index.html)
 
 
-# Funky features in the model
+# Analyzing model behavior from animations
+
+Funky features in the model
 [ ICON sea ice dynamics bug , see ngc4008_mov_np_conc.mp4](https://owncloud.gwdg.de/index.php/s/jg6fusRH9FO2ojO#/files_mediaviewer/ngc4008_mov_np_conc.mp4)
 
-# Strong drift in components
+# Finding strong drift in components in time series plots
 
 [ ICON test run cooling ](https://swift.dkrz.de/v1/dkrz_34406075a1684be9b56a2669a90730f2/nextgems-tmx-tuning/ngc3-tmx001/ngc3-tmx001_atm_mon.html)
 
