@@ -67,7 +67,7 @@ See [xkcd](https://xkcd.com/977/) for an overview of more projections.
 # The issue of too much data
 
 * About 100 variables in a model output dataset
-* A 2.5 km resolution simulation has about 320 Mio grid cells per layer.
+* A 2.5 km resolution simulation has about 80 Mio grid cells per layer.
 * Things evolve over time - how do you look at 100 years of simulation?
 
 # Image and data resolution
