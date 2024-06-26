@@ -77,8 +77,17 @@ See [xkcd](https://xkcd.com/977/) for an overview of more projections.
 * Need about 2.5% of the data for a global map
 * Dataset hierarchies with decreasing resolutions minimize time to plot.
 
+# Rules of thumb
+* First process, then plot (and cache processing results if possible).
+* Reduce data as early as possible, but keep non-linearities in mind.
 
 # What are key variables you would look at? At what frequency / averaging?
+
+# Loading your data in python
+
+* We will use jupyterhub.dkrz.de for interactive python plotting.
+* We need a couple extra packages. You can simply install them with
+`%pip install PACKAGENAME` in a jupyter notebook.
 
 # Loading data with xarray and intake catalogs
 
@@ -287,60 +296,7 @@ plt.savefig("filename.png")
 * Use  `f"namebase_{timestep:04d}.png"` or similar to create an ascending numbering
 * Use something like `ffmpeg -framerate 30 -pattern_type glob -i "namebase_*.png"  -c:v libx264 -r 30 -pix_fmt yuv420p ouput_file.mp4` to convert into an animation.
 
-# Interactive visualizations with Plotly
-- Introduction to Plotly
-- Creating interactive plots
-- Embedding interactive plots in Jupyter Notebooks
 
-# Best Practices for Effective Data Visualization
-- Choosing the right visualization type
-- Ensuring clarity and readability
-- Using color effectively
-
-# Common Pitfalls and How to Avoid Them
-- Avoiding misleading visualizations
-- Handling outliers and missing data
-- Ensuring reproducibility and transparency
-
-# Optimizing Performance for Large Visualizations
-- Techniques for improving performance
-- Using efficient data structures
-- Parallel processing and optimization tools
-
-# Designing for Clarity and Impact
-- Principles of good design
-- Tips for creating impactful visualizations
-- Examples of effective climate visualizations
-
-# Review of Key Concepts and Techniques
-- Summary of main points
-- Key takeaways
-- Recap of visualization techniques
-
-# Additional Resources and Further Learning
-- Recommended books and articles
-- Online courses and tutorials
-- Useful libraries and tools
-
-# Q&A Session
-- Open floor for questions
-- Discussion and clarifications
-- Sharing additional insights and tips
-
-# Feedback and Next Steps
-- Gathering participant feedback
-- Discussing next steps and follow-up activities
-- Thank you and closing remarks
-
-# Hands-on Exercise 1: Visualizing Your Own Data
-- Instructions for the exercise
-- Dataset recommendations
-- Step-by-step guide
-
-# Hands-on Exercise 2: Customizing Plots and Interactivity
-- Instructions for the exercise
-- Techniques for customization
-- Step-by-step guide
 
 # Jupyter notebooks and *plain* python scripts
 * Jupyter keeps the python running.
