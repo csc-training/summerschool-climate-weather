@@ -70,6 +70,14 @@ See [xkcd](https://xkcd.com/977/) for an overview of more projections.
 * A 2.5 km resolution simulation has about 320 Mio grid cells per layer.
 * Things evolve over time - how do you look at 100 years of simulation?
 
+# Image and data resolution
+
+* One standard plot is about 1000x500 pixels
+* 5 km output is 20 000 000 pixels
+* Need about 2.5% of the data for a global map
+* Dataset hierarchies with decreasing resolutions minimize time to plot.
+
+
 # What are key variables you would look at? At what frequency / averaging?
 
 # Loading data with xarray and intake catalogs
@@ -118,107 +126,171 @@ Much better. :)
 
 * [intake](https://intake.readthedocs.io/en/latest/) and [xarray](https://docs.xarray.dev/en/stable/) - loading data
 * [numpy](https://numpy.org/doc/stable/) - efficient number crunching
+* [pandas](https://pandas.pydata.org/docs/) - working with tables
 * [matplotlib](https://matplotlib.org/) & [cartopy](https://scitools.org.uk/cartopy/docs/latest/) - basic plots
 * [seaborn](https://seaborn.pydata.org/) - nicer visualizations
+* [dask](https://docs.dask.org/en/latest/) - last resort if you need parallelization
 
 
 # Line plots and friends
 
-* Matplotlib and Seaborn
+Have a look at [seaborn](https://seaborn.pydata.org/), and improve the time series plot.
 
-# Maps and Projections
+# Digging deeper
 
-# Other plots (sections / means)
+Let's plot the temperatures for Hamburg and Korpilampi. First thing we need is to find the places in the data array. Here, the `healpy` package comes in handy.
+
+```
+? hp.ang2pix
+
+Signature:  hp.ang2pix(nside, theta, phi, nest=False, lonlat=False)
+Docstring:
+ang2pix : nside,theta[rad],phi[rad],nest=False,lonlat=False -> ipix (default:RING)
+
+Parameters
+----------
+nside : int, scalar or array-like
+  The healpix nside parameter, must be a power of 2, less than 2**30
+theta, phi : float, scalars or array-like
+  Angular coordinates of a point on the sphere
+nest : bool, optional
+  if True, assume NESTED pixel ordering, otherwise, RING pixel ordering
+lonlat : bool
+  If True, input angles are assumed to be longitude and latitude in degree,
+  otherwise, they are co-latitude and longitude in radians.
+
+Returns
+-------
+pix : int or array of int
+  The healpix pixel numbers. Scalar if all input are scalar, array otherwise.
+  Usual numpy broadcasting rules apply.
+
+See Also
+--------
+pix2ang, pix2vec, vec2pix
+
+Examples
+--------
+Note that some of the test inputs below that are on pixel boundaries
+such as theta=pi/2, phi=pi/2, have a tiny value of 1e-15 added to them
+to make them reproducible on i386 machines using x87 floating point
+instruction set (see https://github.com/healpy/healpy/issues/528).
+
+>>> import healpy as hp
+>>> hp.ang2pix(16, np.pi/2, 0)
+1440
+
+>>> print(hp.ang2pix(16, [np.pi/2, np.pi/4, np.pi/2, 0, np.pi], [0., np.pi/4, np.pi/2 + 1e-15, 0, 0]))
+[1440  427 1520    0 3068]
+
+>>> print(hp.ang2pix(16, np.pi/2, [0, np.pi/2 + 1e-15]))
+[1440 1520]
+
+>>> print(hp.ang2pix([1, 2, 4, 8, 16], np.pi/2, 0))
+[   4   12   72  336 1440]
+
+>>> print(hp.ang2pix([1, 2, 4, 8, 16], 0, 0, lonlat=True))
+[   4   12   72  336 1440]
+File:      /usr/local/lib/python3.11/site-packages/healpy/pixelfunc.py
+Type:      function
+```
 
 
-# Image and data resolution
+# Digging deeper
+```
+import intake
+import healpy as hp
+import pandas as pd
+
+cat = intake.open_catalog("https://data.nextgems-h2020.eu/online.yaml")
+zoom = 5
+phi=([53.5, 60.3251229])
+theta = ([10, 24.7303234])
+cells = hp.ang2pix(theta=theta, phi=phi, nside=2**zoom, lonlat=True, nest=True)
+tas = cat.ICON.ngc3028(zoom=zoom).to_dask().tas.isel(cell = cells)
+df = pd.DataFrame( dict(Hamburg=tas.isel(cell=0), Korpilampi=tas.isel(cell=1)), index=tas.time)
+df.plot()
+```
+
+# See if we got the points right
+```
+world=cat.ICON.ngc3028(zoom=zoom).to_dask().tas.isel(time=0)
+world[cells]= 4e2
+hp.mollview(world, flip='geo', nest=True, cmap='inferno')
+```
+![](images/position_check.png){width=60%}
 
 
-# A first map plot
-
-# How to render for performance
-
-# Summary
-
+# Comparing the temperatures
+```
+plt.figure(figsize=(7,7))
+sns.scatterplot(df, x="Hamburg", y="Korpilampi", hue=df.index.month, palette=sns.color_palette("husl", 12))
+plt.xlim(plt.ylim())
+```
+![](images/scatterplot.png){width=35%}
 
 
 # Filtering and subsetting data
-- Zonal and meridional means
+```
+from easygems.healpix import attach_coords
+ds = cat.ICON.ngc3028(zoom=5).to_dask().pipe(attach_coords)
+latgroups = ds.tas.isel(time=0).groupby('lat')
+latgroups.mean().plot()
+plt.xlim((-90,90))
+```
+![](images/tas_vs_lat.png){width=30%}
+
+# Vertical sections
+```
+from easygems.healpix import attach_coords
+ds = cat.ICON.ngc3028(zoom=5).to_dask().pipe(attach_coords)
+latgroups = ds.ta.isel(time=0).groupby('lat')
+latgroups.mean().plot(cmap="inferno")
+
+```
+![](images/vert_sec_bad.png){width=30%}
+
+What's wrong with this plot?
+
+# Vertical sections
+```
+from easygems.healpix import attach_coords
+ds = cat.ICON.ngc3028(zoom=5).to_dask().pipe(attach_coords)
+latgroups = ds.ta.isel(time=0).groupby('lat')
+latgroups.mean().plot(cmap="inferno")
+plt.ylim(plt.ylim()[::-1])
+```
+![](images/vert_sec_flipped.png){width=30%}
+
+Better, but we'd actually want a different vertical axis in the data.
+
+# Saving figures
+
+```
+plt.savefig("filename.png")
+```
+
+* PNG for pixel graphics with sharp edges
+* JPG for pixel graphics with photo-like transitions
+* pdf for vector graphics
+
+# Animating things
+
+* Loop over the time axis and generate numbered plots.
+* What's wrong with `f"namebase_{timestep}.png"` for naming the files?
 
 
-# Dask and chunking
-- Using Dask for parallel computing
-- Caching results
+# Animating things
 
-# Exploratory Data Analysis (EDA)
-- Summary statistics
-- Visualizing distributions
-- Identifying patterns and anomalies
+* Loop over the time axis and generate numbered plots of the global temperature map.
+* What's wrong with `f"namebase_{timestep}.png"` for naming the files?
+* Use  `f"namebase_{timestep:04d}.png"` or similar to create an ascending numbering
+* Use something like `ffmpeg -framerate 30 -pattern_type glob -i "namebase_*.png"  -c:v libx264 -r 30 -pix_fmt yuv420p ouput_file.mp4` to convert into an animation.
 
-# Introduction to Matplotlib
-- Basic plotting functions
-- Customizing plots (titles, labels, legends)
-- Saving and exporting plots
-
-# Creating Line Plots and Time Series Visualizations
-- Plotting time series data
-- Adding trend lines and error bands
-- Customizing time series plots
-
-# Generating Scatter Plots and Correlation Analysis
-- Creating scatter plots
-- Visualizing correlations
-- Adding regression lines and confidence intervals
-
-# Using Seaborn for Statistical Visualizations
-- Overview of Seaborn
-- Creating advanced statistical plots
-- Customizing Seaborn plots
-
-# Interactive Visualizations with Plotly
+# Interactive visualizations with Plotly
 - Introduction to Plotly
 - Creating interactive plots
 - Embedding interactive plots in Jupyter Notebooks
-
-# Advanced Geospatial Visualizations with Cartopy
-- Overview of Cartopy
-- Creating advanced geospatial plots
-- Customizing Cartopy maps
-
-# Visualizing Climate Anomalies
-- What are climate anomalies?
-- Techniques for visualizing anomalies
-- Case study: Visualizing temperature anomalies
-
-# Creating Climate Model Comparison Plots
-- Comparing outputs from different models
-- Visualizing ensemble means and spread
-- Creating multi-panel plots for comparison
-
-# Generating Ensemble Plots
-- What are ensemble plots?
-- Techniques for creating ensemble plots
-- Customizing ensemble visualizations
-
-# Animating Climate Data Over Time
-- Creating animations with Matplotlib and Plotly
-- Techniques for temporal data animation
-- Exporting animations as GIFs or videos
-
-# Case Study 1: Visualizing Temperature Changes
-- Dataset introduction
-- Step-by-step visualization process
-- Key insights and interpretations
-
-# Case Study 2: Precipitation Patterns and Trends
-- Dataset introduction
-- Step-by-step visualization process
-- Key insights and interpretations
-
-# Case Study 3: Sea Level Rise Visualization
-- Dataset introduction
-- Step-by-step visualization process
-- Key insights and interpretations
 
 # Best Practices for Effective Data Visualization
 - Choosing the right visualization type
