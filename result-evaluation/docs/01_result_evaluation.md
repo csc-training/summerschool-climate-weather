@@ -5,26 +5,46 @@ event:  ESiWACE3 and WarmWorld Summer School 2024
 lang:   en
 ---
 
+#
+
+All models are wrong, but some are useful.
+
+George Box, 1976
+
+# What is our model good at?
+
+* We want to use the model to learn about the climate system.
+* We might want to learn about the future, where there are no observations.
+* We might want to learn about the past, where observations are scarce.
+* Where can we trust the model / where rather not?
+
+# The difficulty of comparing to reality
+* There is substantial climate variability, even on longer time scales.
+* We don't know for which quantity our reality is on which end of the variability spectrum.
+* We don't know for which quantity our simulation is on which end of the variability spectrum.
+* We call the path of a simulation through the space of possible weathers the **trajectory**.
+
 # The free-running model
 * We don't expect the model to get the weather right, but the climate, i.e. the **statistics** of the weather.
 * We can't directly compare to weather observations.
+* Climate is changing fast.
 
 What should we do?
 
 # The free-running model
 * We don't expect the model to get the weather right, but the climate, i.e. the **statistics** of the weather.
 * We can't directly compare to weather observations.
+* Climate is changing fast.
 * We can verify conservation laws, etc.
 * We can analyze the behavior.
-* Wa can compare statistics to observations.
+* We can compare statistics to observations.
 * We can compare statistics to those of other models.
 
-# What can we compare to?
+# Topics of this talk
 
-# What can we compare to?
-* Individual measurements
-* Satellite data
-* Reanalyses
+* Analyzing the model itself.
+* Direct comparison to reanalysis
+* Comparisons in ensembles
 
 # Verifying conservation laws
 
@@ -49,6 +69,17 @@ Funky features in the model
 # Finding strong drift in components in time series plots
 
 [ ICON test run cooling ](https://swift.dkrz.de/v1/dkrz_34406075a1684be9b56a2669a90730f2/nextgems-tmx-tuning/ngc3-tmx001/ngc3-tmx001_atm_mon.html)
+
+
+# What can we compare to?
+
+# What can we compare to?
+* Individual measurements (difficult, c.f. statistics)
+* Satellite data (same issue)
+* Reanalyses
+* Other models and other runs with the same model (but what is *correct*?)
+
+
 
 # Comparing to reanalysis
 
