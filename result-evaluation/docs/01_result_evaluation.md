@@ -209,9 +209,10 @@ Why would we do that?
 
 Comparing a single model initial--condition large ensemble to observations
 
-* Tackling the problem of variability by providing an envelope of simulations 
-* Many (~ 100) practically identical simulations with slightly varying initial conditions
-* Ideally, for a long-running ensemble reality should sometimes be at the upper end, sometimes at the lower end, and most times somewhere within the zoo of simulations. 
+* Tackles the problem of variability by providing an envelope of runs.
+* Standard in weather forecasting.
+* Many identical simulations with slightly varying initial conditions
+* Ideally, for a long-running ensemble, reality should sometimes be at the upper end, sometimes at the lower end, and most times somewhere within the zoo of simulations. 
 * see [Hamill, 2001](https://doi.org/10.1175/1520-0493(2001)129%3C0550:IORHFV%3E2.0.CO;2); [Suarez-Gutierrez, Milinski, Maher, 2021](https://link.springer.com/article/10.1007/s00382-021-05821-w) for details.
 
 # Comparing to other simulations with the same or other models
