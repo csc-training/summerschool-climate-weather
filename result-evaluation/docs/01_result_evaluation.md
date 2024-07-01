@@ -158,6 +158,42 @@ plt.legend()
 
 
 # Comparing precipitation
+```
+pr_mean_model = icon.sel(time=timeslice)['pr'].mean(dim="time")
+pr_mean_obs = hera.sel(time=timeslice)["tp"].mean(dim="time")
+
+params_pr_diff = dict(cmap="BrBG", flip="geo", nest=True)
+hp.mollview(pr_mean_model-pr_mean_obs, **params_pr_diff)
+plt.title("Model-ERA5")
+```
+![This looks wrong](images/pr_mean_diff_wrong.png){width=40%}
+
+# What are the units?
+
+```
+print ( f'{icon.pr.attrs["units"]=}\n{hera.tp.attrs["units"]=}')
+
+icon.pr.attrs["units"]='kg m-2 s-1'
+hera.tp.attrs["units"]='m'
+```
+
+(actually a bit of investigation showed that the (H)ERA monthly mean is in m/d)
+
+# New attempt
+
+```
+pr_mean_model = icon.sel(time=timeslice)['pr'].mean(dim="time")
+pr_mean_obs = hera.sel(time=timeslice)["tp"].mean(dim="time")
+# Technically we'd have to use daily means to avoid the error of computing a longer mean
+# from 12 equally-weighted monthly means.
+
+params_pr_diff = dict(cmap="BrBG", flip="geo", nest=True)
+hp.mollview(pr_mean_model*86400/1000.-pr_mean_obs, **params_pr_diff)
+plt.title("precipitation Model-ERA5 (m/d)")
+hp.mollview(pr_mean_model*86400/1000, **params_pr_diff, min=-.01, max=.01) # for comparison
+plt.title('Model precipitation (m/d)')
+```
+![Much better](images/pr_mean_diff.png){width=30%} ![For reference](images/pr_mean_model.png){width=30%}
 
 # Climatologies
 * The same day / month averaged across many years
