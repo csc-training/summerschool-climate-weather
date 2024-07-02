@@ -346,7 +346,7 @@ Within data regions host and device memory can be updated with the <span style="
 
 # Optimization: Device data management
 
-<div class=column style=width:45%>
+<div class=column style=width:32%>
 
 ```Fortran
 PROGRAM p1B
@@ -369,7 +369,7 @@ PROGRAM p1B
 ```
 </div>
 
-<div class=column style=width:45%>
+<div class=column style=width:65%>
 
 ```Fortran
    !$ACC PARALLEL
@@ -382,9 +382,72 @@ PROGRAM p1B
    print * , s
 END PROGRAM
 ```
+* In order to avoid excessive data movement between the CPU and the GPU the programmer can manually allocate and transfer data on the GPU. Data can than be kept on the GPU and reused between different kernels
+
 </div>
 
 # Optimization: Device data management
+
+* Syntax: 
+<br>
+<span style="color: green;">`!$ACC DATA [data_clause]`</span>
+<br>
+<span style="color: green;">`!$ACC END DATA`</span>
+
+* data_clause: e.g. <span style="color: green;"> `CREATE` </span>, <span style="color: green;"> `COPYIN` </span>
+
+# Optimization: Device data management
+
+<div class=column style=width:48%>
+```
+> NVCOMPILER_ACC_TIME=1 ./p1A
+Accelerator Kernel Timing data
+/work/k20200/k202137/ACC_examples/p1A.f90
+  p1a  NVIDIA  devicenum=0
+    time(us): 76
+```
+</div>
+
+<div class=column style=width:48%>
+```
+> NVCOMPILER_ACC_TIME=1 ./p1B
+Accelerator Kernel Timing data
+/work/k20200/k202137/ACC_examples/p1B.f90
+  p1b  NVIDIA  devicenum=0
+    time(us): 33
+```
+</div>
+
+# Optimization: Device data management
+
+```
+> NVCOMPILER_ACC_TIME=1 ./p1B
+Accelerator Kernel Timing data
+/work/k20200/k202137/ACC_examples/p1B.f90
+  p1b  NVIDIA  devicenum=0
+    time(us): 33
+    8: data region reached 2 times
+    9: compute region reached 1 time
+        9: kernel launched 1 time
+            grid: [8]  block: [128]
+            elapsed time(us): total=30 max=30 min=30 avg=30
+    15: compute region reached 1 time
+        15: kernel launched 1 time
+            grid: [8]  block: [128]
+            elapsed time(us): total=19 max=19 min=19 avg=19
+    22: compute region reached 1 time
+        22: kernel launched 1 time
+            grid: [8]  block: [128]
+            elapsed time(us): total=28 max=28 min=28 avg=28
+        22: reduction kernel launched 1 time
+            grid: [1]  block: [256]
+            elapsed time(us): total=19 max=19 min=19 avg=19
+    22: data region reached 2 times
+        22: data copyin transfers: 1
+             device time(us): total=5 max=5 min=5 avg=5
+        26: data copyout transfers: 1
+             device time(us): total=28 max=28 min=28 avg=28
+```
 
 # Explicit data transfer
 
