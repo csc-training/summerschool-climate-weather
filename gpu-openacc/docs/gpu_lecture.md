@@ -126,6 +126,9 @@ DO jt = 1, n_tracers
    END DO
 END DO
 ```
+* Parallelize frequent loop (>10000 iterations) -> `ncells`
+
+# OpenACC massive parallelism
 
 ```Fortran
 DO ic = 1, n_cells
@@ -136,6 +139,9 @@ DO ic = 1, n_cells
    END DO
 END DO
 ```
+* `n_tracers=O(10)` is too small
+
+# OpenACC massive parallelism
 
 ```Fortran
 ! [...] some CPU-only management code
@@ -146,6 +152,7 @@ DO ic = 1, n_cells
    END DO
 END DO
 ```
+* `COLLAPSE(2)` tells the compiler to combine both loops and exposes maximum parallelism
 
 # Hands-on exercises I
 
