@@ -706,8 +706,148 @@ regions
 
 # Example enter exit data
 
+<div class=column style=width:48%>
+```Fortran
+PROGRAM p3_enter_data
+! [variable declarations]
+   
+   call construct (a, n)
+   call assign (a)
+   call vec_scalar_mult (a, 2.0)
+   
+   s = sum_vec (a)
+   print *, s
+   
+   call destruct (a)
 
+END PROGRAM
+```
+</div>
 
+<div class=column style=width:48%>
+```Fortran
+MODULE mo_vec
+...
+   type t_vec
+      integer :: n
+      real, pointer :: x(:)
+   end type t_vec
+
+   subroutine construct (a, n)
+   [… variable declaration… ]
+      !$ACC ENTER DATA CREATE(a)
+      a% n = n
+      !$ACC UPDATE DEVICE(a% n)
+      allocate (a% x(n))
+      !$ACC ENTER DATA CREATE(a% x)
+   end subroutine construct
+```
+</div>
+
+# Example enter exit data
+
+<div class=column style=width:48%>
+```Fortran
+PROGRAM p3_enter_data
+! [variable declarations]
+   
+   call construct (a, n)
+   call assign (a)
+   call vec_scalar_mult (a, 2.0)
+   
+   s = sum_vec (a)
+   print *, s
+   
+   call destruct (a)
+
+END PROGRAM
+```
+</div>
+
+<div class=column style=width:48%>
+```Fortran
+... [continue mo_vec] ...
+   subroutine destruct (a)
+      type(t_vec), intent(inout) :: a
+      !$ACC EXIT DATA DELETE(a% x)
+      deallocate (a% x)
+      !$ACC EXIT DATA DELETE(a)
+   end subroutine destruct
+```
+</div>
+
+# Example enter exit data
+
+<div class=column style=width:48%>
+```Fortran
+PROGRAM p3_enter_data
+! [variable declarations]
+ 
+   call construct (a, n)
+   call assign (a)
+   call vec_scalar_mult (a, 2.0)
+
+   s = sum_vec (a)
+   print *, s
+
+   call destruct (a)   
+
+END PROGRAM
+```
+</div>
+
+<div class=column style=width:48%>
+```Fortran 
+... [continue mo_vec] ...
+   subroutine assign (a)
+      type(t_vec),intent(inout) :: a
+      integer :: i
+      !$ACC PARALLEL LOOP DEFAULT(present)
+      do i = 1, a% n
+         a% x(i) = real(i)
+      end do
+      !$ACC END LOOP
+   end subroutine assign
+```
+</div>
+
+# Example enter exit data
+
+<div class=column style=width:48%>
+```Fortran
+PROGRAM p3_enter_data
+! [variable declarations]
+
+   call construct (a, n)
+   call assign (a)
+   call vec_scalar_mult (a, 2.0)
+
+   s = sum_vec (a)
+   print *, s
+
+   call destruct (a) 
+
+END PROGRAM
+```
+</div>
+
+<div class=column style=width:48%>
+```Fortran
+... [continue mo_vec] ...
+   subroutine vec_scalar_mult (a, s)
+      type(t_vec),intent(inout) :: a
+      real ,intent(in) :: s
+      integer :: i
+      !$ACC PARALLEL LOOP DEFAULT(present)
+      do i = 1, a% n
+         a% x(i) = s * a% x(i)
+      end do
+      !$ACC END PARALLEL LOOP
+   end subroutine vec_scalar_mult
+...
+END MODULE
+```
+</div>
 
 # PRESENT and DEFAULT clauses
 
