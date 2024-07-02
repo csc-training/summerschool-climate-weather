@@ -158,6 +158,8 @@ END DO
 
 # Data transfer
 
+<div class=column style=width:45%>
+
 ```Fortran
    PROGRAM p1A
    ! [variable declarations]
@@ -167,21 +169,157 @@ END DO
         a(i) = i
      end do
 13   !$ACC END PARALLEL
+
 15   !$ACC PARALLEL LOOP
      do i = 1 , n
         a(i) = 2*a(i)
      end do
 19   !$ACC END PARALLEL
+
      s = 0.
+```
+</div>
+<div class=column style=width:45%>
+```Fortran
 22   !$ACC PARALLEL
      !$ACC LOOP REDUCTION(+: s)
      do i = 1 , n
         s = s + a(i)
      end do
 26   !$ACC END PARALLEL
+
      print * , s
   END PROGRAM
 ```
+</div>
+
+# Data transfer
+
+<div class=column style=width:32%>
+
+```Fortran
+   PROGRAM p1A
+   ! [variable declarations]
+
+9    !$ACC PARALLEL LOOP
+     do i = 1 , n
+        a(i) = i
+     end do
+13   !$ACC END PARALLEL
+
+15   !$ACC PARALLEL LOOP
+     do i = 1 , n
+        a(i) = 2*a(i)
+     end do
+19   !$ACC END PARALLEL
+
+     s = 0.
+```
+</div>
+<div class=column style=width:65%>
+```
+> NVCOMPILER_ACC_TIME=1 ./p1A
+Accelerator Kernel Timing data
+/work/k20200/k202137/ACC_examples/p1A.f90
+  p1a  NVIDIA  devicenum=0
+    time(us): 76
+    9: compute region reached 1 time
+        9: kernel launched 1 time
+            grid: [8]  block: [128]
+            elapsed time(us): total=29 max=29 min=29 avg=29
+    9: data region reached 2 times
+        13: data copyout transfers: 1
+             device time(us): total=28 max=28 min=28 avg=28
+```
+</div>
+
+# Data transfer
+
+<div class=column style=width:32%>
+
+```Fortran
+   PROGRAM p1A
+   ! [variable declarations]
+
+9    !$ACC PARALLEL LOOP
+     do i = 1 , n
+        a(i) = i
+     end do
+13   !$ACC END PARALLEL
+
+15   !$ACC PARALLEL LOOP
+     do i = 1 , n
+        a(i) = 2*a(i)
+     end do
+19   !$ACC END PARALLEL
+
+     s = 0.
+```
+</div>
+<div class=column style=width:65%>
+```
+> NVCOMPILER_ACC_TIME=1 ./p1A
+Accelerator Kernel Timing data
+/work/k20200/k202137/ACC_examples/p1A.f90
+  p1a  NVIDIA  devicenum=0
+    time(us): 76
+    ...
+    
+    15: compute region reached 1 time
+        15: kernel launched 1 time
+            grid: [8]  block: [128]
+            elapsed time(us): total=27 max=27 min=27 avg=27
+    15: data region reached 2 times
+        15: data copyin transfers: 1
+             device time(us): total=12 max=12 min=12 avg=12
+        19: data copyout transfers: 1
+             device time(us): total=9 max=9 min=9 avg=9
+```
+</div>
+
+# Data transfer
+
+<div class=column style=width:32%>
+
+```Fortran
+22   !$ACC PARALLEL
+     !$ACC LOOP REDUCTION(+: s)
+     do i = 1 , n
+        s = s + a(i)
+     end do
+26   !$ACC END PARALLEL
+
+     print * , s
+  END PROGRAM
+
+```
+</div>
+<div class=column style=width:65%>
+```
+> NVCOMPILER_ACC_TIME=1 ./p1A
+Accelerator Kernel Timing data
+/work/k20200/k202137/ACC_examples/p1A.f90
+  p1a  NVIDIA  devicenum=0
+    time(us): 76
+    ...
+
+    22: compute region reached 1 time
+        22: kernel launched 1 time
+            grid: [8]  block: [128]
+            elapsed time(us): total=19 max=19 min=19 avg=19
+        22: reduction kernel launched 1 time
+            grid: [1]  block: [256]
+            elapsed time(us): total=19 max=19 min=19 avg=19
+    22: data region reached 2 times
+        22: data copyin transfers: 2
+             device time(us): total=20 max=13 min=7 avg=10
+        26: data copyout transfers: 1
+             device time(us): total=7 max=7 min=7 avg=7
+
+```
+</div>
+
+
 
 # Data clauses
 
