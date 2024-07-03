@@ -176,7 +176,7 @@ print ( f'{icon.pr.attrs["units"]=}\n{hera.tp.attrs["units"]=}')
 icon.pr.attrs["units"]='kg m-2 s-1'
 hera.tp.attrs["units"]='m/d'
 ```
-n
+
 # New attempt
 
 ```
