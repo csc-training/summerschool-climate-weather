@@ -193,6 +193,67 @@ plt.title('Model precipitation (m/d)')
 ```
 ![Much better](images/pr_mean_diff.png){width=30%} ![For reference](images/pr_mean_model.png){width=30%}
 
+# Wind speed zonal mean section
+
+Problem: The models have different vertical grids. The ICON output is on model levels, while (H)ERA is on pressure levels.
+
+
+Solution: Vertical interpolation to the pressure levels of HERA.
+
+# Wind speed zonal mean section
+
+Solution: Vertical interpolation to the pressure levels of HERA.
+
+```python
+def hacky_linear_interpolation(data, target_grid, target, dim="level_full"):
+    from collections.abc import Iterable   
+    
+    if isinstance(target, Iterable) and len(target) > 1:
+        return np.array([hacky_linear_interpolation(data, target_grid, y, dim) for y in target ])
+    else:
+        level_above = (target_grid > target).argmax(dim=dim)
+        level_below = level_above - 1
+        value_above = target_grid.isel(**{dim: level_above})
+        value_below = target_grid.isel(**{dim: level_below})
+        f = (target - value_below) / (value_above - value_below)
+        interpolated =  (1-f) * data.isel(**{dim: level_below}) + f * data.isel(**{dim: level_above})
+        return np.where(level_above > 0, interpolated, np.nan)
+```
+
+# Wind speed zonal mean
+
+```
+interpolated = hacky_linear_interpolation(
+    icon.ua.sel(time=timeslice).mean(dim='time').compute(), 
+    icon.pfull.sel(time=timeslice).mean(dim='time').compute(), 
+    target*100)
+icon_on_pl = xr.Dataset(
+    dict(level=target,
+         crs = icon.crs, 
+         ua = xr.DataArray(interpolated, 
+                           name='ua', 
+                           attrs = dict(grid_mapping = 'crs'), 
+                           dims=('level','cell')))).pipe(attach_coords)
+icon_ua = icon_on_pl.ua.groupby('lat').mean().compute()
+hera_ua = hera.u.sel(time=timeslice).mean(dim="time").groupby('lat').mean().compute()
+```
+
+# Wind speed zonal mean
+
+```
+plt.imshow(icon_ua-hera_ua, aspect='auto', cmap='RdBu', vmin=-10, vmax=10, interpolation='nearest')
+plt.colorbar(label="zonal wind speed ICON-ERA (m/s)")
+plt.contour(hera_ua, vmin=-40, vmax=40, colors='white')
+plt.contour(hera_ua, cmap="RdBu", vmin=-40, vmax=40, linestyles='dashed')
+plt.colorbar(label="zonal wind speed in ERA5 (m/s)")
+yticks = range (0, len(target), 5)
+plt.yticks( yticks, [str(target[x]) for x in yticks] )
+plt.ylabel('hPa')
+xticks = (range(0, len(hera_ua.lat), len(hera_ua.lat)//6))
+plt.xticks(xticks, [f'{hera_ua.lat.values[x]:.0f}' for x in xticks] )
+plt.xlabel('deg N')
+```
+![](images/ua-diff-vs-obs.png){width=40%}
 # Climatologies
 * The same day / month averaged across many years
 
