@@ -139,9 +139,9 @@ lang:   en
 
 * Levante nodes are grouped into partitions which are sets of nodes with associated limits for wall-clock time, job size, etc:
   * **compute** is intended for running parallel scientific applications. The compute nodes allocated for a job are used exclusively and cannot be shared with other jobs.
-  * **shared** can be used to run small jobs not requiring a whole node for the execution, such that one compute node can be shared between different jobs.
+  * **shared** can be used to run small jobs not requiring a whole node for the execution, such that one node can be shared between different jobs.
   * **interactive** is intended for memory or compute intensive data processing and compilation tasks that should not run on the login nodes.
-  * **gpu** is intended for GPU-aware scientific applications (e.g. via OpenACC programming) or interactive 3-dimensional data visualization via VirtualGL/TurboVNC.
+  * **gpu** is intended for GPU-aware scientific applications (e.g. via OpenACC programming), machine learning or interactive 3-dimensional data visualization via VirtualGL/TurboVNC.
 
 # SLURM
 
@@ -170,7 +170,7 @@ interactive    up   12:00:00      4   idle l[40066-40069]
   - The most relevant job states are running (R), pending (PD), completing (CG), completed (CD) and cancelled (CA)
 - Example: Get information on the status of your jobs
 ```
-> squeue -u <userid>
+> squeue -u $USER
              JOBID PARTITION     NAME     USER ST       TIME  NODES NODELIST(REASON)
           10947275   compute cpu_chec  k202113 PD       0:00      1 (Priority)
           10947472   compute cpu_chec  k202113 PD       0:00      1 (Dependency)
