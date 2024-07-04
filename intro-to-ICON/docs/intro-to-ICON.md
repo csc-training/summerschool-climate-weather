@@ -70,11 +70,21 @@ nextGEMS R2B8/R2B9: 84% atmosphere, 14% ocean, 2.5% output
 # The ICON model grid
 
 ![](img/icon_grids.png){.center width=35%}
+
 - Base structure: Icosahedron (20 triangles) covering Earth
 - Subdivisions into smaller triangles
-- R**X**B**Y** notation with **X** being the number of pieces the edges of the original triangles are divided into, and **Y** the number of follow-up Bisections. R2B8 is first cutting every edge into 2 pieces, and then halving each piece 8 times. (512 pieces in the end), corresponding to about 10 km resolution.
+
+- R**X**B**Y** notation 
+  - **X** being the number of pieces the edges of the original triangles are divided into 
+  - **Y** the number of follow-up Bisections. 
+
+# The ICON MODEL grid
+
+![](img/R2B2.jpg){width=60%}
 
 # The vertical coordinates
+
+![](img/vert-grid.jpg){width=60%}
 
 # The ICON atmosphere time loop
 
