@@ -86,6 +86,10 @@ nextGEMS R2B8/R2B9: 84% atmosphere, 14% ocean, 2.5% output
 
 ![](img/vert-grid.jpg){width=60%}
 
+# The grid cell
+
+![](img/cells.jpg)
+
 # The ICON atmosphere time loop
 
 ![](img/icon_time_step.jpg)
