@@ -44,7 +44,8 @@ What should we do?
 
 * Analyzing the model itself.
 * Direct comparison to reanalysis
-* Comparisons in ensembles
+
+# Analyzing the model itself {.section}
 
 # Verifying conservation laws
 
@@ -79,6 +80,7 @@ Funky features in the model
 * Reanalyses
 * Other models and other runs with the same model (but what is *correct*?)
 
+# Comparing to reanalysis {.section}
 
 
 # Comparing to reanalysis
@@ -253,7 +255,9 @@ xticks = (range(0, len(hera_ua.lat), len(hera_ua.lat)//6))
 plt.xticks(xticks, [f'{hera_ua.lat.values[x]:.0f}' for x in xticks] )
 plt.xlabel('deg N')
 ```
-![](images/ua-diff-vs-obs.png){width=40%}
+![](images/ua-diff-vs-obs.png){width=20%}
+
+
 # Climatologies
 * The same day / month averaged across many years
 
